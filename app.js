@@ -1,9 +1,31 @@
-const demoForm = document.getElementById("demo-form");
+import { db } from "./firebase.js";
+import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
 const guestNameInput = document.getElementById("guestName");
 const demoMessage = document.getElementById("demoMessage");
 const qrContainer = document.getElementById("qrcode");
 
 let qrInstance = null;
+
+const form = document.getElementById("demo-form");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  console.log("CLICK DETECTADO");
+
+  const name = document.getElementById("guestName").value;
+
+  await addDoc(collection(db, "guests"), {
+    name: name,
+    event_id: "evento1",
+    confirmed: true,
+    checked_in: false
+  });
+
+  alert("Guardado no Firebase!");
+});
 
 function createQrCode(payload) {
   qrContainer.innerHTML = "";
@@ -23,31 +45,38 @@ function createQrCode(payload) {
   });
 }
 
-demoForm.addEventListener("submit", function (event) {
-  event.preventDefault();
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  const guestName = guestNameInput.value.trim();
+  const name = guestNameInput.value.trim();
 
-  if (!guestName) {
+  if (!name) {
     demoMessage.textContent = "Por favor, informe o seu nome.";
-    qrContainer.innerHTML = "";
     return;
   }
 
-  const qrPayload = JSON.stringify({
-    sistema: "EventoQR",
-    nome: guestName,
-    estado: "Confirmado",
-    criadoEm: new Date().toISOString()
-  });
+  try {
+    const docRef = await addDoc(collection(db, "guests"), {
+      name: name,
+      event_id: "evento1",
+      confirmed: true,
+      checked_in: false,
+      created_at: new Date()
+    });
 
-  demoMessage.textContent = "Confirmado com sucesso";
+    demoMessage.textContent = "Presença confirmada ✔";
 
-  if (qrInstance) {
-    qrContainer.innerHTML = "";
+    const qrPayload = JSON.stringify({
+      guest_id: docRef.id,
+      nome: name
+    });
+
+    createQrCode(qrPayload);
+
+  } catch (error) {
+    console.error(error);
+    demoMessage.textContent = "Erro ao confirmar";
   }
-
-  createQrCode(qrPayload);
 });
 
 const revealElements = document.querySelectorAll(".fade-in");
