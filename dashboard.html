@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard EventoQR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Dashboard EventoQR</h1>
+
+        <!-- MÉTRICAS -->
+        <div class="stats">
+            <div class="card">
+                <h3>Total</h3>
+                <p id="total">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Confirmados</h3>
+                <p id="confirmed">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Entraram</h3>
+                <p id="checked">0</p>
+            </div>
+        </div>
+
+        <!-- TABELA -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Status</th>
+                    <th>Entrada</th>
+                </tr>
+            </thead>
+            <tbody id="guestTable"></tbody>
+        </table>
+
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+
+</body>
+
+</html>
