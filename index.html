@@ -13,14 +13,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="./src/shared/styles/styles.css" />
 </head>
 
 <body>
     <header class="site-header">
         <div class="container header-wrap">
             <a class="brand" href="#hero" aria-label="EventoQR inicio">
-                <img src="eventoqr.png" alt="EventoQR" />
+                <img src="./src/img/eventoqr.png" alt="EventoQR" />
             </a>
             <nav class="nav-links" aria-label="Navegacao principal">
                 <a href="#solucao">Solucao</a>
@@ -35,7 +35,7 @@
         <section id="hero" class="hero section">
             <div class="hero-overlay"></div>
             <div class="container hero-content fade-in">
-                <img class="hero-logo" src="eventoqr.png" alt="EventoQR" />
+                <img class="hero-logo" src="./src/img/eventoqr.png" alt="EventoQR" />
                 <h2>Eventos exclusivos exigem controlo total</h2>
                 <p class="subtitle">Sistema premium de gestão de convidados com confirmação automática e QR Code</p>
                 <div class="hero-buttons">
@@ -176,7 +176,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     
-    <script type="module" src="app.js"></script>
+    <script type="module" src="./src/services/app.js"></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
-import { subscribeAuthState } from "./src/services/auth-service.js";
-import { subscribeGuestsByUser } from "./src/services/guest-service.js";
-import { safeText } from "./src/shared/utils/sanitizers.js";
+import { subscribeAuthState } from "./auth-service.js";
+import { subscribeGuestsByUser } from "./guest-service.js";
+import { safeText } from "../shared/utils/sanitizers.js";
 
 const table = document.getElementById("guestTable");
 const totalEl = document.getElementById("total");

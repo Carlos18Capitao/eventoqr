@@ -1,5 +1,5 @@
-import { loginWithEmailAndPassword } from "./src/services/auth-service.js";
-import { validateEmail, validatePassword } from "./src/shared/utils/validators.js";
+import { loginWithEmailAndPassword } from "./auth-service.js";
+import { validateEmail, validatePassword } from "../shared/utils/validators.js";
 
 const btn = document.getElementById("loginBtn");
 

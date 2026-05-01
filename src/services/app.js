@@ -1,7 +1,7 @@
-import { subscribeAuthState } from "./src/services/auth-service.js";
-import { addGuest } from "./src/services/guest-service.js";
-import { normalizeWhitespace } from "./src/shared/utils/sanitizers.js";
-import { validateGuestName } from "./src/shared/utils/validators.js";
+import { subscribeAuthState } from "./auth-service.js";
+import { addGuest } from "./guest-service.js";
+import { normalizeWhitespace } from "../shared/utils/sanitizers.js";
+import { validateGuestName } from "../shared/utils/validators.js";
 
 let currentUser = null;
 

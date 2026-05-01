@@ -1,7 +1,7 @@
-import { subscribeAuthState } from "./src/services/auth-service.js";
-import { checkInGuest, getGuestById } from "./src/services/guest-service.js";
-import { parseQrPayload } from "./src/services/scanner-service.js";
-import { UI_MESSAGES } from "./src/shared/utils/constants.js";
+import { subscribeAuthState } from "./auth-service.js";
+import { checkInGuest, getGuestById } from "./guest-service.js";
+import { parseQrPayload } from "./scanner-service.js";
+import { UI_MESSAGES } from "../shared/utils/constants.js";
 
 const status = document.getElementById("status");
 let scannerStarted = false;
