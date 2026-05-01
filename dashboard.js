@@ -1,65 +1,55 @@
-import { db } from "./firebase.js";
-import {
-collection,
-onSnapshot,
-query,
-where
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const auth = getAuth();
+import { subscribeAuthState } from "./src/services/auth-service.js";
+import { subscribeGuestsByUser } from "./src/services/guest-service.js";
+import { safeText } from "./src/shared/utils/sanitizers.js";
 
 const table = document.getElementById("guestTable");
 const totalEl = document.getElementById("total");
 const confirmedEl = document.getElementById("confirmed");
 const checkedEl = document.getElementById("checked");
 
-// ESPERA O LOGIN
-onAuthStateChanged(auth, (user) => {
+subscribeAuthState((user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
-if (!user) {
-window.location.href = "login.html";
-return;
-}
+  subscribeGuestsByUser(
+    user.uid,
+    (snapshot) => {
+      table.textContent = "";
 
-console.log("Utilizador:", user.uid);
+      let total = 0;
+      let confirmed = 0;
+      let checked = 0;
 
-// AGORA SIM cria a query
-const q = query(
-collection(db, "guests"),
-where("user_id", "==", user.uid)
-);
+      snapshot.forEach((guestDoc) => {
+        const guest = guestDoc.data();
 
-// ESCUTA EM TEMPO REAL
-onSnapshot(q, (snapshot) => {
+        total += 1;
+        if (guest.confirmed) confirmed += 1;
+        if (guest.checked_in) checked += 1;
 
-  table.innerHTML = "";
+        const row = document.createElement("tr");
 
-  let total = 0;
-  let confirmed = 0;
-  let checked = 0;
+        const nameCell = document.createElement("td");
+        nameCell.textContent = safeText(guest.name);
 
-  snapshot.forEach((doc) => {
-    const g = doc.data();
+        const statusCell = document.createElement("td");
+        statusCell.textContent = guest.confirmed ? "Confirmado" : "Pendente";
 
-    total++;
+        const checkedInCell = document.createElement("td");
+        checkedInCell.textContent = guest.checked_in ? "Entrou" : "-";
 
-    if (g.confirmed) confirmed++;
-    if (g.checked_in) checked++;
+        row.append(nameCell, statusCell, checkedInCell);
+        table.appendChild(row);
+      });
 
-    const row = `<tr><td>${g.name}</td><td>${g.confirmed ? "Confirmado" : "Pendente"}</td><td>${g.checked_in ? "Entrou" : "—"}</td></tr>`;
-
-    table.innerHTML += row;
-  });
-
-  totalEl.innerText = total;
-  confirmedEl.innerText = confirmed;
-  checkedEl.innerText = checked;
-
-});
-
+      totalEl.innerText = String(total);
+      confirmedEl.innerText = String(confirmed);
+      checkedEl.innerText = String(checked);
+    },
+    () => {
+      table.textContent = "Erro ao carregar convidados";
+    }
+  );
 });

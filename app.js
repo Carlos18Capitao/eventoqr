@@ -1,13 +1,12 @@
-import { db, app } from "./firebase.js";
-import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const auth = getAuth(app);
+import { subscribeAuthState } from "./src/services/auth-service.js";
+import { addGuest } from "./src/services/guest-service.js";
+import { normalizeWhitespace } from "./src/shared/utils/sanitizers.js";
+import { validateGuestName } from "./src/shared/utils/validators.js";
 
 let currentUser = null;
 
 // Esperar autenticação
-onAuthStateChanged(auth, (user) => {
+subscribeAuthState((user) => {
   if (!user) {
     console.log("Sem login");
     return;
@@ -34,19 +33,17 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const name = guestNameInput.value.trim();
+  const name = normalizeWhitespace(guestNameInput.value);
 
-  if (!name) {
-    demoMessage.textContent = "Informe o nome";
+  if (!validateGuestName(name)) {
+    demoMessage.textContent = "Informe um nome valido";
     return;
   }
 
   try {
-    const docRef = await addDoc(collection(db, "guests"), {
-      name: name,
-      user_id: currentUser.uid,
-      confirmed: true,
-      checked_in: false
+    const docRef = await addGuest({
+      name,
+      userId: currentUser.uid,
     });
 
 

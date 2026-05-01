@@ -1,53 +1,78 @@
-import { db } from "./firebase.js";
-import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { subscribeAuthState } from "./src/services/auth-service.js";
+import { checkInGuest, getGuestById } from "./src/services/guest-service.js";
+import { parseQrPayload } from "./src/services/scanner-service.js";
+import { UI_MESSAGES } from "./src/shared/utils/constants.js";
 
 const status = document.getElementById("status");
+let scannerStarted = false;
+const html5QrCode = new Html5Qrcode("preview");
+
+function setStatus(message) {
+  status.innerText = message;
+}
 
 function onScanSuccess(decodedText) {
-  try {
-    const data = JSON.parse(decodedText);
+  const parsed = parseQrPayload(decodedText);
 
-    validarEntrada(data.guest_id);
-
-  } catch (e) {
-    status.innerText = "QR inválido";
+  if (!parsed.ok) {
+    setStatus(UI_MESSAGES.invalidQr);
+    return;
   }
+
+  validarEntrada(parsed.payload.guest_id);
 }
 
 async function validarEntrada(guestId) {
-  const ref = doc(db, "guests", guestId);
-  const snap = await getDoc(ref);
+  const snap = await getGuestById(guestId);
 
   if (!snap.exists()) {
-    status.innerText = "Convidado não encontrado";
+    setStatus(UI_MESSAGES.guestNotFound);
     return;
   }
 
   const guest = snap.data();
 
   if (guest.checked_in) {
-    status.innerText = "Entrada já utilizada ❌";
+    setStatus(`${UI_MESSAGES.alreadyCheckedIn} X`);
     return;
   }
 
-  await updateDoc(ref, {
-    checked_in: true
-  });
+  await checkInGuest(guestId);
 
-  status.innerText = "Entrada autorizada ✔";
+  setStatus(`${UI_MESSAGES.entryAuthorized} OK`);
 }
 
-const html5QrCode = new Html5Qrcode("preview");
-
-Html5Qrcode.getCameras().then(devices => {
-  if (devices && devices.length) {
-    html5QrCode.start(
-      devices[0].id,
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      onScanSuccess
-    );
+async function startScanner() {
+  if (scannerStarted) {
+    return;
   }
+
+  const devices = await Html5Qrcode.getCameras();
+
+  if (!devices || !devices.length) {
+    setStatus("Nenhuma camera encontrada");
+    return;
+  }
+
+  await html5QrCode.start(
+    devices[0].id,
+    {
+      fps: 10,
+      qrbox: 250,
+    },
+    onScanSuccess
+  );
+
+  scannerStarted = true;
+}
+
+subscribeAuthState((user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  startScanner().catch(() => {
+    setStatus("Erro ao iniciar scanner");
+  });
 });

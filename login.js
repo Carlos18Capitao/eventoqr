@@ -1,15 +1,13 @@
-import { app } from "./firebase.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const auth = getAuth(app);
+import { loginWithEmailAndPassword } from "./src/services/auth-service.js";
+import { validateEmail, validatePassword } from "./src/shared/utils/validators.js";
 
 const btn = document.getElementById("loginBtn");
 
 btn.addEventListener("click", login);
 
 async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
     const msg = document.getElementById("msg");
 
     msg.textContent = "";
@@ -19,8 +17,18 @@ async function login() {
         return;
     }
 
+    if (!validateEmail(email)) {
+      msg.textContent = "Email invalido";
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      msg.textContent = "Password deve ter pelo menos 6 caracteres";
+      return;
+    }
+
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+      await loginWithEmailAndPassword(email, password);
 
 
         window.location.href = "dashboard.html";

@@ -34,6 +34,12 @@ h1 {
     flex-direction: column;
 }
 
+label {
+    margin-bottom: 6px;
+    color: #bbb;
+    font-size: 0.9rem;
+}
+
 input {
     padding: 12px;
     margin-bottom: 15px;
@@ -63,4 +69,5 @@ button:hover {
     margin-top: 10px;
     text-align: center;
     color: #ff4d4d;
+    min-height: 20px;
 }
